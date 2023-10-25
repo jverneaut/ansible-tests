@@ -1,0 +1,30 @@
+- name: Config server
+  hosts: all
+  vars:
+    composer_url: https://getcomposer.org/download/latest-stable/composer.phar
+  become: true
+  tasks:
+    - name: PHP | Add php repository
+      apt_repository: repo="ppa:ondrej/php"
+
+    - name: PHP | Update the repo
+      apt: update_cache=yes
+
+    - name: PHP | Install php
+      apt: name=php8.1 state=present
+
+    - name: Composer | Install latest stable composer
+      get_url:
+        url: '{{ composer_url }}'
+        checksum: sha256:{{ composer_url }}.sha256sum
+        dest: /usr/local/bin/composer.phar
+        mode: '0755'
+
+    - name: Composer | Symlink composer.phar
+      file:
+        src: composer.phar
+        dest: /usr/local/bin/composer
+        state: link
+
+    - name: MySQL | Install MySQL
+      apt: name=mysql-server state=latest
