@@ -1,5 +1,8 @@
-- name: Config server
-  hosts: all
+##################################################
+# DO Community Playbooks: LEMP on Ubuntu 18.04
+##################################################
+---
+- hosts: all
   become: true
 
   tasks:
@@ -11,31 +14,67 @@
       apt: name={{ item }} update_cache=yes state=latest
       loop: [ 'nginx', 'mysql-server', 'python3-pymysql', 'php-fpm', 'php-mysql' ]
 
-  # vars:
-  #   composer_url: https://getcomposer.org/download/latest-stable/composer.phar
+    # Nginx Configuration
+    - name: Sets Nginx conf file
+      template:
+        src: "files/nginx.conf.j2"
+        dest: "/etc/nginx/sites-available/{{ http_conf }}"
 
-  # tasks:
-  #   - name: PHP | Add php repository
-  #     apt_repository: repo="ppa:ondrej/php"
+    - name: Enables new site
+      file:
+        src: "/etc/nginx/sites-available/{{ http_conf }}"
+        dest: "/etc/nginx/sites-enabled/{{ http_conf }}"
+        state: link
+      notify: Reload Nginx
 
-  #   - name: PHP | Update the repo
-  #     apt: update_cache=yes
+    - name: Removes "default" site
+      file:
+        path: "/etc/nginx/sites-enabled/default"
+        state: absent
+      notify: Reload Nginx
 
-  #   - name: PHP | Install php
-  #     apt: name=php8.1 state=present
+    # MySQL Configuration
+    - name: Sets the root password
+      mysql_user:
+        name: root
+        password: "{{ mysql_root_password }}"
+        login_unix_socket: /var/run/mysqld/mysqld.sock
 
-  #   - name: Composer | Install latest stable composer
-  #     get_url:
-  #       url: '{{ composer_url }}'
-  #       checksum: sha256:{{ composer_url }}.sha256sum
-  #       dest: /usr/local/bin/composer.phar
-  #       mode: '0755'
+    - name: Removes all anonymous user accounts
+      mysql_user:
+        name: ''
+        host_all: yes
+        state: absent
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
 
-  #   - name: Composer | Symlink composer.phar
-  #     file:
-  #       src: composer.phar
-  #       dest: /usr/local/bin/composer
-  #       state: link
+    - name: Removes the MySQL test database
+      mysql_db:
+        name: test
+        state: absent
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
 
-  #   - name: MySQL | Install MySQL
-  #     apt: name=mysql-server state=latest
+    # UFW Configuration
+    - name: "UFW - Allow HTTP on port {{ http_port }}"
+      ufw:
+        rule: allow
+        port: "{{ http_port }}"
+        proto: tcp
+
+    # Sets Up PHP Info Page
+    - name: Sets Up PHP Info Page
+      template:
+        src: "files/info.php.j2"
+        dest: "/var/www/html/info.php"
+
+  handlers:
+    - name: Reload Nginx
+      service:
+        name: nginx
+        state: reloaded
+
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
