@@ -6,8 +6,9 @@
   become: true
 
   tasks:
-    - name: Remove Apache
-      apt: name=httpd state=absent autoremove=yes
+    - name: Uninstall Apache
+      apt: name={{ item }} state=absent
+      loop: [ 'apache2' ]
 
     - name: Install Prerequisites
       apt: name={{ item }} update_cache=yes state=latest force_apt_get=yes
