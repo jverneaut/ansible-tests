@@ -8,8 +8,7 @@
   tasks:
     - name: Add ondrej/php repository
       apt_repository:
-      repo: ppa:ondrej/php
-      when: ansible_distribution == 'Ubuntu'
+       repo: ppa:ondrej/php
 
     - name: Update apt cache
       apt:
