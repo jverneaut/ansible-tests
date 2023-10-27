@@ -6,110 +6,110 @@
   become: true
 
   tasks:
-    - name: Add ondrej/php repository
-      apt_repository:
-       repo: ppa:ondrej/php
+    # - name: Add ondrej/php repository
+    #   apt_repository:
+    #    repo: ppa:ondrej/php
 
-    - name: Update apt cache
-      apt:
-        update_cache: yes
+    # - name: Update apt cache
+    #   apt:
+    #     update_cache: yes
 
-    - name: Uninstall Apache
-      apt: name={{ item }} state=absent
-      loop: [ 'apache2' ]
+    # - name: Uninstall Apache
+    #   apt: name={{ item }} state=absent
+    #   loop: [ 'apache2' ]
 
-    - name: Install Prerequisites
-      apt: name={{ item }} update_cache=yes state=latest force_apt_get=yes
-      loop: [ 'aptitude' ]
+    # - name: Install Prerequisites
+    #   apt: name={{ item }} update_cache=yes state=latest force_apt_get=yes
+    #   loop: [ 'aptitude' ]
 
-    - name: Install LEMP Packages
-      apt: name={{ item }} update_cache=yes state=latest
-      loop: [ 'nginx', 'mysql-server', 'python3-pymysql' ]
+    # - name: Install LEMP Packages
+    #   apt: name={{ item }} update_cache=yes state=latest
+    #   loop: [ 'nginx', 'mysql-server', 'python3-pymysql' ]
 
-    # Install PHP
-    - name: Install and PHP
-      apt:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - php8.1
-        - php8.1-cli
-        - php8.1-fpm
-        - php8.1-mysql
-        - php8.1-curl
-        - php8.1-gd
-        - php8.1-mbstring
-        - php8.1-xml
-        - php8.1-xmlrpc
-        - php8.1-zip
+    # # Install PHP
+    # - name: Install and PHP
+    #   apt:
+    #     name: "{{ item }}"
+    #     state: present
+    #   loop:
+    #     - php8.1
+    #     - php8.1-cli
+    #     - php8.1-fpm
+    #     - php8.1-mysql
+    #     - php8.1-curl
+    #     - php8.1-gd
+    #     - php8.1-mbstring
+    #     - php8.1-xml
+    #     - php8.1-xmlrpc
+    #     - php8.1-zip
 
-    # Nginx Configuration
-    - name: Sets Nginx conf file
-      template:
-        src: "files/nginx.conf.j2"
-        dest: "/etc/nginx/sites-available/{{ http_conf }}"
+    # # Nginx Configuration
+    # - name: Sets Nginx conf file
+    #   template:
+    #     src: "files/nginx.conf.j2"
+    #     dest: "/etc/nginx/sites-available/{{ http_conf }}"
 
-    - name: Enables new site
-      file:
-        src: "/etc/nginx/sites-available/{{ http_conf }}"
-        dest: "/etc/nginx/sites-enabled/{{ http_conf }}"
-        state: link
-      notify: Reload Nginx
+    # - name: Enables new site
+    #   file:
+    #     src: "/etc/nginx/sites-available/{{ http_conf }}"
+    #     dest: "/etc/nginx/sites-enabled/{{ http_conf }}"
+    #     state: link
+    #   notify: Reload Nginx
 
-    - name: Removes "default" site
-      file:
-        path: "/etc/nginx/sites-enabled/default"
-        state: absent
-      notify: Reload Nginx
+    # - name: Removes "default" site
+    #   file:
+    #     path: "/etc/nginx/sites-enabled/default"
+    #     state: absent
+    #   notify: Reload Nginx
 
-    # MySQL Configuration
-    - name: Sets the root password
-      mysql_user:
-        name: root
-        password: "{{ mysql_root_password }}"
-        login_unix_socket: /var/run/mysqld/mysqld.sock
+    # # MySQL Configuration
+    # - name: Sets the root password
+    #   mysql_user:
+    #     name: root
+    #     password: "{{ mysql_root_password }}"
+    #     login_unix_socket: /var/run/mysqld/mysqld.sock
 
-    - name: Removes all anonymous user accounts
-      mysql_user:
-        name: ''
-        host_all: yes
-        state: absent
-        login_user: root
-        login_password: "{{ mysql_root_password }}"
+    # - name: Removes all anonymous user accounts
+    #   mysql_user:
+    #     name: ''
+    #     host_all: yes
+    #     state: absent
+    #     login_user: root
+    #     login_password: "{{ mysql_root_password }}"
 
-    - name: Removes the MySQL test database
-      mysql_db:
-        name: test
-        state: absent
-        login_user: root
-        login_password: "{{ mysql_root_password }}"
+    # - name: Removes the MySQL test database
+    #   mysql_db:
+    #     name: test
+    #     state: absent
+    #     login_user: root
+    #     login_password: "{{ mysql_root_password }}"
 
-    - name: Create the MySQL database
-      mysql_db: name="${{ mysql_db_name }}" state=present login_user=root login_password="{{ mysql_root_password }}"
+    # - name: Create the MySQL database
+    #   mysql_db: name="${{ mysql_db_name }}" state=present login_user=root login_password="{{ mysql_root_password }}"
 
-    # UFW Configuration
-    - name: "UFW - Allow HTTP on port 80"
-      ufw:
-        rule: allow
-        port: 80
-        proto: tcp
+    # # UFW Configuration
+    # - name: "UFW - Allow HTTP on port 80"
+    #   ufw:
+    #     rule: allow
+    #     port: 80
+    #     proto: tcp
 
-    - name: "UFW - Allow HTTP on port 443"
-      ufw:
-        rule: allow
-        port: 443
-        proto: tcp
+    # - name: "UFW - Allow HTTP on port 443"
+    #   ufw:
+    #     rule: allow
+    #     port: 443
+    #     proto: tcp
 
-    # Sets Up PHP Info Page
-    - name: Sets Up PHP Info Page
-      template:
-        src: "files/info.php.j2"
-        dest: "/var/www/html/info.php"
+    # # Sets Up PHP Info Page
+    # - name: Sets Up PHP Info Page
+    #   template:
+    #     src: "files/info.php.j2"
+    #     dest: "/var/www/html/info.php"
 
-    - name: Add basic PHP page
-      template:
-        src: "files/index.php"
-        dest: "/var/www/html/index.php"
+    # - name: Add basic PHP page
+    #   template:
+    #     src: "files/index.php"
+    #     dest: "/var/www/html/index.php"
 
     - name: Install Certbot for Let's Encrypt
       apt:
