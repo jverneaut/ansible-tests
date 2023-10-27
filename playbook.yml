@@ -16,7 +16,25 @@
 
     - name: Install LEMP Packages
       apt: name={{ item }} update_cache=yes state=latest
-      loop: [ 'nginx', 'mysql-server', 'python3-pymysql', 'php-fpm', 'php-mysql' ]
+      loop: [ 'nginx', 'mysql-server', 'python3-pymysql' ]
+
+    # Install PHP
+    - name: Install Apache and PHP
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - apache2
+        - php8.1
+        - php8.1-cli
+        - php8.1-fpm
+        - php8.1-mysql
+        - php8.1-curl
+        - php8.1-gd
+        - php8.1-mbstring
+        - php8.1-xml
+        - php8.1-xmlrpc
+        - php8.1-zip
 
     # Nginx Configuration
     - name: Sets Nginx conf file
