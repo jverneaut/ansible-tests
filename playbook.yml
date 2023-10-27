@@ -113,8 +113,11 @@
 
     - name: Install Certbot for Let's Encrypt
       apt:
-        name: certbot
+        name: "{{ item }}"
         state: present
+      loop:
+        - certbot
+        - python3-certbot-nginx
 
     - name: Request SSL certificate using Certbot
       shell: certbot --nginx --non-interactive --agree-tos --redirect --email {{ admin_email }} -d {{ site_domain }}
