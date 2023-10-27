@@ -88,10 +88,16 @@
       mysql_db: name="${{ mysql_db_name }}" state=present login_user=root login_password="{{ mysql_root_password }}"
 
     # UFW Configuration
-    - name: "UFW - Allow HTTP on port {{ http_port }}"
+    - name: "UFW - Allow HTTP on port 80"
       ufw:
         rule: allow
-        port: "{{ http_port }}"
+        port: 80
+        proto: tcp
+
+    - name: "UFW - Allow HTTP on port 443"
+      ufw:
+        rule: allow
+        port: 443
         proto: tcp
 
     # Sets Up PHP Info Page
@@ -99,6 +105,11 @@
       template:
         src: "files/info.php.j2"
         dest: "/var/www/html/info.php"
+
+    - name: Add basic PHP page
+      template:
+        src: "files/index.php"
+        dest: "/var/www/html/index.php"
 
     - name: Install Certbot for Let's Encrypt
       apt:
