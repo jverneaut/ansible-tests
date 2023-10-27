@@ -27,12 +27,11 @@
       loop: [ 'nginx', 'mysql-server', 'python3-pymysql' ]
 
     # Install PHP
-    - name: Install Apache and PHP
+    - name: Install and PHP
       apt:
         name: "{{ item }}"
         state: present
       loop:
-        - apache2
         - php8.1
         - php8.1-cli
         - php8.1-fpm
@@ -87,7 +86,6 @@
 
     - name: Create the MySQL database
       mysql_db: name="${{ mysql_db_name }}" state=present login_user=root login_password="{{ mysql_root_password }}"
-
 
     # UFW Configuration
     - name: "UFW - Allow HTTP on port {{ http_port }}"
