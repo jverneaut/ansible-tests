@@ -59,6 +59,10 @@
         login_user: root
         login_password: "{{ mysql_root_password }}"
 
+    - name: Create the MySQL database
+      mysql_db: name="${{ mysql_db_name }}" state=present login_user=root login_password="{{ mysql_root_password }}"
+
+
     # UFW Configuration
     - name: "UFW - Allow HTTP on port {{ http_port }}"
       ufw:
