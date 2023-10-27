@@ -100,6 +100,16 @@
         src: "files/info.php.j2"
         dest: "/var/www/html/info.php"
 
+    - name: Install Certbot for Let's Encrypt
+      apt:
+        name: certbot
+        state: present
+
+    - name: Request SSL certificate using Certbot
+      shell: certbot --nginx --non-interactive --agree-tos --redirect --email {{ admin_email }} -d {{ site_domain }}
+      notify: Reload Nginx
+      ignore_errors: true
+
   handlers:
     - name: Reload Nginx
       service:
