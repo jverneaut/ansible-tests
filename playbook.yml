@@ -27,7 +27,7 @@
       loop: [ 'nginx', 'mysql-server', 'python3-pymysql' ]
 
     # Install PHP
-    - name: Install and PHP
+    - name: Install PHP
       apt:
         name: "{{ item }}"
         state: present
