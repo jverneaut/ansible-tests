@@ -111,18 +111,18 @@
         src: "files/index.php"
         dest: "/var/www/html/index.php"
 
-    # - name: Install Certbot for Let's Encrypt
-    #   apt:
-    #     name: "{{ item }}"
-    #     state: present
-    #   loop:
-    #     - certbot
-    #     - python3-certbot-nginx
+    - name: Install Certbot for Let's Encrypt
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - certbot
+        - python3-certbot-nginx
 
-    # - name: Request SSL certificate using Certbot
-    #   shell: certbot --nginx --non-interactive --agree-tos --redirect --email {{ admin_email }} -d {{ http_host }}
-    #   notify: Reload Nginx
-    #   ignore_errors: true
+    - name: Request SSL certificate using Certbot
+      shell: certbot --nginx --non-interactive --agree-tos --redirect --email {{ admin_email }} -d {{ http_host }}
+      notify: Reload Nginx
+      ignore_errors: true
 
   handlers:
     - name: Reload Nginx
